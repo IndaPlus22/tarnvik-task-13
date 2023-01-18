@@ -1,0 +1,1 @@
+/Users/tilde/Documents/KTH/DD1338\ -\ Algoritmer\ och\ datastrukturer/tarnvik-task-13/ray_tracer/target/debug/ray_tracer: /Users/tilde/Documents/KTH/DD1338\ -\ Algoritmer\ och\ datastrukturer/tarnvik-task-13/ray_tracer/src/main.rs
