@@ -1,3 +1,4 @@
+use core::num::dec2flt::float;
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -38,8 +39,7 @@ impl Vec3 {
 
     //scalar product
     pub fn dot (&self, v: Vec3) -> f64{
-        self.0 * v.0 + self.1 * v.1 + self.2 * v.2
-        
+        self.0 * v.0 + self.1 * v.1 + self.2 * v.2        
     }
 
     pub fn length(&self) -> f64{
@@ -51,6 +51,32 @@ impl Vec3 {
         let length = &self.length();
         self.scalar_division(length)
     }
+}
+
+struct Hit_record{
+    f: f64,
+    p: Vec3,
+    normal: Vec3
+}
+
+//hitable?????
+
+struct Sphere {
+    center: Vec3,
+    radius: f64,
+}
+
+impl Sphere{
+    pub fn hit(r: &Ray, center: Vec3, radius: f64) {
+        let oc = r.origin().subtract(&center);
+        let a = r.direction().dot(r.direction());
+        let b = oc.dot(r.direction());
+        let c = oc.dot(r.origin().subtract(&center)) - radius * radius;
+        let discriminant = b*b - a*c;
+
+        if discriminant > 0 {}
+    }
+    
 }
 
 struct Ray {
@@ -74,21 +100,30 @@ impl Ray {
     }
 }
 
-fn hit_sphere(r: &Ray, center: Vec3, radius: f64) -> bool{
+fn hit_sphere(r: &Ray, center: Vec3, radius: f64) -> f64{
     let oc = r.origin().subtract(&center);
     let a = r.direction().dot(r.direction());
     let b = 2.0 * oc.dot(r.direction());
     let c = oc.dot(r.origin().subtract(&center)) - radius * radius;
     let discriminant = b*b - 4.0*a*c;
-    discriminant > 0.0
+    if discriminant < 0.0 {
+        return -1.0
+    } else {
+        (-b - discriminant.sqrt()) / (2.0*a)
+    }
 }
 
 fn color(r : Ray) -> Vec3{
-    if hit_sphere(&r, Vec3(0.0,0.0,-1.0), 0.5){
-        return Vec3(1.0,0.0,0.0);
+    let mut t = hit_sphere(&r, Vec3(0.0,0.0,-1.0), 0.5);
+    if (t > 0.0){
+        let N = (r.point_at_parameter(t)
+            .subtract(&Vec3(0.0, 0.0, -1.0)))
+            .unit_vector();
+        return N.add(Vec3(1.0, 1.0, 1.0)).scalar_multiply(0.5);
+        //return Vec3(N.0+1.0, N.1+1.0, N.2+1.0).scalar_multiply(0.5);        
     }
     let unit_direction = (r.direction()).unit_vector();
-    let t = 0.5*(unit_direction.1 + 1.0);
+    t = 0.5*(unit_direction.1 + 1.0);
     Vec3(1.0, 1.0, 1.0)
         .scalar_multiply(1.0-t)
         .add(Vec3(0.5, 0.7, 1.0)
