@@ -4,7 +4,7 @@ use std::io::prelude::*;
 struct Vec3 (f64, f64, f64);
 
 impl Vec3 {
-    pub fn add(self, v: Vec3) -> Vec3{
+    pub fn add(&self, v: Vec3) -> Vec3{
         Vec3(
             self.0 + v.0, 
             self.1 + v.1, 
@@ -12,7 +12,15 @@ impl Vec3 {
         )
     }
 
-    pub fn scalar_multiply(self, s: f64) -> Vec3{
+    pub fn subtract(&self, v: &Vec3) -> Vec3{
+        Vec3(
+            self.0 - v.0, 
+            self.1 - v.1, 
+            self.2 - v.2
+        )
+    }
+
+    pub fn scalar_multiply(&self, s: f64) -> Vec3{
         Vec3(
             self.0 * s,
             self.1 * s,
@@ -20,7 +28,7 @@ impl Vec3 {
         )
     }
 
-    pub fn scalar_division(self, s: &f64) -> Vec3{
+    pub fn scalar_division(&self, s: &f64) -> Vec3{
         Vec3(
             self.0 / s,
             self.1 / s,
@@ -28,14 +36,19 @@ impl Vec3 {
         )
     }
 
+    //scalar product
+    pub fn dot (&self, v: Vec3) -> f64{
+        self.0 * v.0 + self.1 * v.1 + self.2 * v.2
+        
+    }
+
     pub fn length(&self) -> f64{
         (self.0*self.0 + self.1*self.1 + self.2*self.2).sqrt()
     }
 
-    pub fn unit_vector(self) -> Vec3{
+    pub fn unit_vector(&self) -> Vec3{
 
         let length = &self.length();
-
         self.scalar_division(length)
     }
 }
@@ -46,12 +59,14 @@ struct Ray {
 }
 
 impl Ray {
-    pub fn origin(self) -> Vec3{
-        self.a
+    pub fn origin(&self) -> Vec3{
+        let v = Vec3(self.a.0, self.a.1, self.a.2);
+        v
     }
 
-    pub fn direction(self) -> Vec3{
-        self.b
+    pub fn direction(&self) -> Vec3{
+        let v = Vec3(self.b.0, self.b.1, self.b.2);
+        v
     }
 
     pub fn point_at_parameter(self, t : f64) -> Vec3{
@@ -59,7 +74,19 @@ impl Ray {
     }
 }
 
+fn hit_sphere(r: &Ray, center: Vec3, radius: f64) -> bool{
+    let oc = r.origin().subtract(&center);
+    let a = r.direction().dot(r.direction());
+    let b = 2.0 * oc.dot(r.direction());
+    let c = oc.dot(r.origin().subtract(&center)) - radius * radius;
+    let discriminant = b*b - 4.0*a*c;
+    discriminant > 0.0
+}
+
 fn color(r : Ray) -> Vec3{
+    if hit_sphere(&r, Vec3(0.0,0.0,-1.0), 0.5){
+        return Vec3(1.0,0.0,0.0);
+    }
     let unit_direction = (r.direction()).unit_vector();
     let t = 0.5*(unit_direction.1 + 1.0);
     Vec3(1.0, 1.0, 1.0)
