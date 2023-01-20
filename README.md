@@ -1,1 +1,3 @@
-# tarnvik-task-13
+# Nay-tracer
+
+you could cargo run this and get a ppm file which you could then open with disapointment to see that my half finished mess of code is infact a half finished mess and does not produce anything cool. I tried to follow the ray tracing in a weekend tutorial using rust but did not give myself enough time to do so so that I could reach a good result and then gave up on it way to late. Atleast I tried but I should definetly try the regular assignment first next time. 
